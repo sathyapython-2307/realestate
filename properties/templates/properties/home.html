@@ -1,0 +1,188 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Home - RealEstate{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <h1>Find Your Dream Property</h1>
+        <p>Buy, Rent, or Lease Properties from Trusted Sellers</p>
+        
+        <div class="row g-3 mt-4">
+            <div class="col-md-3">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" placeholder="Search location...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select">
+                    <option selected>All Types</option>
+                    <option>For Sale</option>
+                    <option>For Rent</option>
+                    <option>For Lease</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select">
+                    <option selected>Property Type</option>
+                    <option>Apartment</option>
+                    <option>House</option>
+                    <option>Villa</option>
+                    <option>Commercial</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'property-list' %}" class="btn btn-light btn-lg w-100">
+                    <i class="fas fa-search"></i> Search
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Properties -->
+{% if featured_properties %}
+<section class="py-5">
+    <div class="container container-main">
+        <h2 class="section-title">Featured Properties</h2>
+        <div class="property-grid">
+            {% for property in featured_properties %}
+                <div class="property-card">
+                    <div class="property-image-container">
+                        {% if property.primary_image %}
+                            <img src="{{ property.primary_image.image.url }}" alt="{{ property.title }}" class="property-image">
+                        {% else %}
+                            <div style="width: 100%; height: 100%; background: #e5e7eb; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-image" style="font-size: 3rem; color: #9ca3af;"></i>
+                            </div>
+                        {% endif %}
+                        <span class="property-badge">
+                            {% if property.listing_type == 'sale' %}
+                                <span class="badge badge-sale">FOR SALE</span>
+                            {% elif property.listing_type == 'rent' %}
+                                <span class="badge badge-rent">FOR RENT</span>
+                            {% else %}
+                                <span class="badge badge-lease">FOR LEASE</span>
+                            {% endif %}
+                        </span>
+                        {% if user.is_authenticated %}
+                            <button class="property-favorite-btn {% if property.id in user_favorites %}active{% endif %}" 
+                                    onclick="toggleFavorite('{{ property.slug }}', this)" title="Add to favorites">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                    <div class="property-info">
+                        <div class="property-price">${{ property.price|floatformat:0 }}</div>
+                        <h3 class="property-title">{{ property.title }}</h3>
+                        <p class="property-location"><i class="fas fa-map-marker-alt"></i> {{ property.city }}, {{ property.state }}</p>
+                        <div class="property-features">
+                            {% if property.bedrooms %}
+                                <span><i class="fas fa-bed"></i> {{ property.bedrooms }} Bed</span>
+                            {% endif %}
+                            {% if property.bathrooms %}
+                                <span><i class="fas fa-bath"></i> {{ property.bathrooms }} Bath</span>
+                            {% endif %}
+                            {% if property.area %}
+                                <span><i class="fas fa-ruler"></i> {{ property.area|floatformat:0 }} sqft</span>
+                            {% endif %}
+                        </div>
+                        <div class="property-actions">
+                            <a href="{% url 'property-detail' property.slug %}" class="btn btn-primary">View Details</a>
+                            {% if user.is_authenticated and user != property.owner %}
+                                <a href="{% url 'contact-property' property.slug %}" class="btn btn-outline-primary">Contact</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Latest Properties -->
+{% if latest_properties %}
+<section class="py-5 bg-light">
+    <div class="container container-main">
+        <h2 class="section-title">Latest Listings</h2>
+        <div class="property-grid">
+            {% for property in latest_properties %}
+                <div class="property-card">
+                    <div class="property-image-container">
+                        {% if property.primary_image %}
+                            <img src="{{ property.primary_image.image.url }}" alt="{{ property.title }}" class="property-image">
+                        {% else %}
+                            <div style="width: 100%; height: 100%; background: #e5e7eb; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-image" style="font-size: 3rem; color: #9ca3af;"></i>
+                            </div>
+                        {% endif %}
+                        <span class="property-badge">
+                            {% if property.listing_type == 'sale' %}
+                                <span class="badge badge-sale">FOR SALE</span>
+                            {% elif property.listing_type == 'rent' %}
+                                <span class="badge badge-rent">FOR RENT</span>
+                            {% else %}
+                                <span class="badge badge-lease">FOR LEASE</span>
+                            {% endif %}
+                        </span>
+                        {% if user.is_authenticated %}
+                            <button class="property-favorite-btn {% if property.id in user_favorites %}active{% endif %}" 
+                                    onclick="toggleFavorite('{{ property.slug }}', this)" title="Add to favorites">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                    <div class="property-info">
+                        <div class="property-price">${{ property.price|floatformat:0 }}</div>
+                        <h3 class="property-title">{{ property.title }}</h3>
+                        <p class="property-location"><i class="fas fa-map-marker-alt"></i> {{ property.city }}, {{ property.state }}</p>
+                        <div class="property-features">
+                            {% if property.bedrooms %}
+                                <span><i class="fas fa-bed"></i> {{ property.bedrooms }} Bed</span>
+                            {% endif %}
+                            {% if property.bathrooms %}
+                                <span><i class="fas fa-bath"></i> {{ property.bathrooms }} Bath</span>
+                            {% endif %}
+                            {% if property.area %}
+                                <span><i class="fas fa-ruler"></i> {{ property.area|floatformat:0 }} sqft</span>
+                            {% endif %}
+                        </div>
+                        <div class="property-actions">
+                            <a href="{% url 'property-detail' property.slug %}" class="btn btn-primary">View Details</a>
+                            {% if user.is_authenticated and user != property.owner %}
+                                <a href="{% url 'contact-property' property.slug %}" class="btn btn-outline-primary">Contact</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'property-list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-arrow-right"></i> View All Properties
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- CTA Section -->
+<section class="py-5" style="background: linear-gradient(135deg, #1e40af 0%, #0f766e 100%); color: white;">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to List Your Property?</h2>
+        <p class="mb-4" style="font-size: 1.1rem;">Start selling, renting, or leasing today. It's fast, easy, and completely free!</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'post-property' %}" class="btn btn-light btn-lg">
+                <i class="fas fa-plus-circle"></i> Post Your Property Now
+            </a>
+        {% else %}
+            <a href="{% url 'signup' %}" class="btn btn-light btn-lg">
+                <i class="fas fa-user-plus"></i> Get Started Free
+            </a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

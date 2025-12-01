@@ -1,0 +1,207 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Dashboard - RealEstate{% endblock %}
+
+{% block content %}
+<div class="container container-main mb-5">
+    <!-- Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow text-center">
+                <div class="card-body">
+                    <i class="fas fa-home text-primary" style="font-size: 2rem;"></i>
+                    <h3 class="text-primary mt-3">{{ stats.total_properties }}</h3>
+                    <p class="text-muted mb-0">Total Properties</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow text-center">
+                <div class="card-body">
+                    <i class="fas fa-check-circle text-success" style="font-size: 2rem;"></i>
+                    <h3 class="text-success mt-3">{{ stats.active_properties }}</h3>
+                    <p class="text-muted mb-0">Active Properties</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow text-center">
+                <div class="card-body">
+                    <i class="fas fa-envelope text-info" style="font-size: 2rem;"></i>
+                    <h3 class="text-info mt-3">{{ stats.total_inquiries }}</h3>
+                    <p class="text-muted mb-0">Total Inquiries</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card border-0 shadow text-center">
+                <div class="card-body">
+                    <i class="fas fa-hourglass-half text-warning" style="font-size: 2rem;"></i>
+                    <h3 class="text-warning mt-3">{{ stats.pending_inquiries }}</h3>
+                    <p class="text-muted mb-0">Pending Inquiries</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card border-0 shadow">
+                <div class="card-body">
+                    <a href="{% url 'post-property' %}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i> Post New Property
+                    </a>
+                    <a href="{% url 'manage-inquiries' %}" class="btn btn-info">
+                        <i class="fas fa-inbox"></i> Manage Inquiries
+                    </a>
+                    <a href="{% url 'saved-properties' %}" class="btn btn-secondary">
+                        <i class="fas fa-heart"></i> Saved Properties
+                    </a>
+                    <a href="{% url 'profile' %}" class="btn btn-secondary">
+                        <i class="fas fa-user"></i> Edit Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Your Properties -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card border-0 shadow">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-list"></i> Your Properties</h5>
+                </div>
+                <div class="card-body">
+                    {% if user_properties %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Property</th>
+                                        <th>Type</th>
+                                        <th>City</th>
+                                        <th>Price</th>
+                                        <th>Status</th>
+                                        <th>Posted</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for property in user_properties %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ property.title }}</strong>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">{{ property.get_listing_type_display }}</span>
+                                            </td>
+                                            <td>{{ property.city }}</td>
+                                            <td>${{ property.price|floatformat:0 }}</td>
+                                            <td>
+                                                {% if property.is_active %}
+                                                    <span class="badge bg-success">Active</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Inactive</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ property.created_at|date:'M d, Y' }}</td>
+                                            <td>
+                                                <a href="{% url 'property-detail' property.slug %}" class="btn btn-sm btn-primary" title="View">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{% url 'edit-property' property.slug %}" class="btn btn-sm btn-warning" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="{% url 'delete-property' property.slug %}" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure?');">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center mb-0">
+                            <i class="fas fa-inbox"></i> You haven't posted any properties yet.
+                            <a href="{% url 'post-property' %}">Post one now!</a>
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Inquiries -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card border-0 shadow">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-inbox"></i> Recent Inquiries</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_inquiries %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Property</th>
+                                        <th>From</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Received</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for inquiry in recent_inquiries %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'property-detail' inquiry.property.slug %}" class="text-decoration-none">
+                                                    {{ inquiry.property.title|truncatewords:5 }}
+                                                </a>
+                                            </td>
+                                            <td>{{ inquiry.sender.get_full_name|default:inquiry.sender.username }}</td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ inquiry.get_inquiry_type_display }}</span>
+                                            </td>
+                                            <td>
+                                                {% if inquiry.status == 'pending' %}
+                                                    <span class="badge bg-warning">Pending</span>
+                                                {% elif inquiry.status == 'responded' %}
+                                                    <span class="badge bg-info">Responded</span>
+                                                {% elif inquiry.status == 'completed' %}
+                                                    <span class="badge bg-success">Completed</span>
+                                                {% else %}
+                                                    <span class="badge bg-danger">Rejected</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ inquiry.created_at|timesince }} ago</td>
+                                            <td>
+                                                <a href="{% url 'inquiry-detail' inquiry.id %}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-envelope-open"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center">
+                            <a href="{% url 'manage-inquiries' %}" class="btn btn-primary">
+                                <i class="fas fa-arrow-right"></i> View All Inquiries
+                            </a>
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center mb-0">
+                            <i class="fas fa-inbox"></i> No inquiries received yet.
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

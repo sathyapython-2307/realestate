@@ -1,0 +1,55 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Login - RealEstate{% endblock %}
+
+{% block content %}
+<div class="container container-main">
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-6 col-lg-5">
+            <div class="card border-0 shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">Welcome Back</h2>
+                    <p class="text-center text-muted mb-4">Login to your account</p>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Username or Email</label>
+                            {{ form.username }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="id_password" class="form-label">Password</label>
+                            {{ form.password }}
+                        </div>
+
+                        <div class="form-check mb-4">
+                            {{ form.remember_me }}
+                            <label class="form-check-label" for="id_remember_me">
+                                Remember me
+                            </label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4">
+                        <p><a href="{% url 'password_reset' %}" class="text-primary fw-bold">Forgot password?</a></p>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p>Don't have an account? <a href="{% url 'signup' %}" class="text-primary fw-bold">Sign up here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Inquiry Details - RealEstate{% endblock %}
+
+{% block content %}
+<div class="container container-main mb-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header" style="background: linear-gradient(135deg, #1e40af 0%, #0f766e 100%); color: white;">
+                    <h3 class="mb-0"><i class="fas fa-envelope-open"></i> Inquiry Details</h3>
+                </div>
+                <div class="card-body p-5">
+                    <!-- Property Info -->
+                    <div class="alert alert-info mb-4">
+                        <h6 class="mb-2"><i class="fas fa-home"></i> Property:</h6>
+                        <a href="{% url 'property-detail' inquiry.property.slug %}" class="text-decoration-none">
+                            <strong>{{ inquiry.property.title }}</strong>
+                        </a><br>
+                        <small class="text-muted">{{ inquiry.property.location }}, {{ inquiry.property.city }}</small>
+                    </div>
+
+                    <!-- Inquiry Info -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>From:</h6>
+                            <p class="mb-1"><strong>{{ inquiry.name }}</strong></p>
+                            <p class="mb-1 text-muted"><i class="fas fa-envelope"></i> {{ inquiry.email }}</p>
+                            <p class="mb-0 text-muted"><i class="fas fa-phone"></i> {{ inquiry.phone }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Inquiry Details:</h6>
+                            <p class="mb-1">
+                                <strong>Type:</strong>
+                                <span class="badge bg-primary">{{ inquiry.get_inquiry_type_display }}</span>
+                            </p>
+                            <p class="mb-1">
+                                <strong>Date:</strong> {{ inquiry.created_at|date:'M d, Y' }}
+                            </p>
+                            <p class="mb-0">
+                                <strong>Status:</strong>
+                                {% if inquiry.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% elif inquiry.status == 'responded' %}
+                                    <span class="badge bg-info">Responded</span>
+                                {% elif inquiry.status == 'completed' %}
+                                    <span class="badge bg-success">Completed</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Rejected</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Message -->
+                    <div class="mb-4">
+                        <h6><i class="fas fa-comment"></i> Message:</h6>
+                        <div class="bg-light p-3 rounded">
+                            {{ inquiry.message|linebreaks }}
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Status Update -->
+                    <form method="POST" class="mb-4">
+                        {% csrf_token %}
+                        <h6 class="mb-3"><i class="fas fa-edit"></i> Update Status:</h6>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <select name="status" class="form-select" required>
+                                    <option value="">Select Status...</option>
+                                    <option value="pending" {% if inquiry.status == 'pending' %}selected{% endif %}>Pending</option>
+                                    <option value="responded" {% if inquiry.status == 'responded' %}selected{% endif %}>Responded</option>
+                                    <option value="completed" {% if inquiry.status == 'completed' %}selected{% endif %}>Completed</option>
+                                    <option value="rejected" {% if inquiry.status == 'rejected' %}selected{% endif %}>Rejected</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-check"></i> Update
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Contact Options -->
+                    <div class="bg-light p-4 rounded">
+                        <h6 class="mb-3"><i class="fas fa-phone-alt"></i> Contact Buyer:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a href="mailto:{{ inquiry.email }}" class="btn btn-outline-primary w-100 mb-2">
+                                    <i class="fas fa-envelope"></i> Send Email
+                                </a>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="tel:{{ inquiry.phone }}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-phone"></i> Call
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Back Button -->
+                    <div class="mt-5">
+                        <a href="{% url 'manage-inquiries' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Inquiries
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

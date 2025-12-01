@@ -1,0 +1,204 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Edit Property - RealEstate{% endblock %}
+
+{% block content %}
+<div class="container container-main mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow">
+                <div class="card-header" style="background: linear-gradient(135deg, #1e40af 0%, #0f766e 100%); color: white;">
+                    <h3 class="mb-0"><i class="fas fa-edit"></i> Edit Property</h3>
+                </div>
+                <div class="card-body p-5">
+                    <!-- Current Images -->
+                    {% if images %}
+                        <div class="mb-5">
+                            <h5 class="mb-3"><i class="fas fa-images"></i> Current Images</h5>
+                            <div class="row">
+                                {% for image in images %}
+                                    <div class="col-md-3 mb-3">
+                                        <div class="position-relative">
+                                            <img src="{{ image.image.url }}" alt="Image" class="img-fluid rounded" style="width: 100%; height: 150px; object-fit: cover;">
+                                            {% if image.is_primary %}
+                                                <span class="badge bg-primary position-absolute top-0 start-0 m-2">Primary</span>
+                                            {% endif %}
+                                            <a href="{% url 'delete-image' image.id %}" class="btn btn-sm btn-danger position-absolute bottom-0 end-0 m-2" onclick="return confirm('Delete this image?');">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <hr class="my-4">
+                        </div>
+                    {% endif %}
+
+                    <form method="POST" enctype="multipart/form-data" id="propertyForm">
+                        {% csrf_token %}
+                        
+                        <!-- Basic Information -->
+                        <h5 class="mb-4"><i class="fas fa-info-circle"></i> Basic Information</h5>
+                        
+                        <div class="mb-3">
+                            <label for="id_title" class="form-label">Property Title *</label>
+                            {{ form.title }}
+                            {% if form.title.errors %}<div class="text-danger small">{{ form.title.errors }}</div>{% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_property_type" class="form-label">Property Type *</label>
+                                {{ form.property_type }}
+                                {% if form.property_type.errors %}<div class="text-danger small">{{ form.property_type.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_listing_type" class="form-label">Listing Type *</label>
+                                {{ form.listing_type }}
+                                {% if form.listing_type.errors %}<div class="text-danger small">{{ form.listing_type.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_description" class="form-label">Description *</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+                        </div>
+
+                        <!-- Location -->
+                        <h5 class="mb-4 mt-5"><i class="fas fa-map-marker-alt"></i> Location</h5>
+
+                        <div class="mb-3">
+                            <label for="id_location" class="form-label">Full Address *</label>
+                            {{ form.location }}
+                            {% if form.location.errors %}<div class="text-danger small">{{ form.location.errors }}</div>{% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_city" class="form-label">City *</label>
+                                {{ form.city }}
+                                {% if form.city.errors %}<div class="text-danger small">{{ form.city.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_state" class="form-label">State/Province</label>
+                                {{ form.state }}
+                                {% if form.state.errors %}<div class="text-danger small">{{ form.state.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_postal_code" class="form-label">Postal Code</label>
+                            {{ form.postal_code }}
+                        </div>
+
+                        <!-- Details -->
+                        <h5 class="mb-4 mt-5"><i class="fas fa-home"></i> Property Details</h5>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_bedrooms" class="form-label">Bedrooms</label>
+                                {{ form.bedrooms }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_bathrooms" class="form-label">Bathrooms</label>
+                                {{ form.bathrooms }}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_area" class="form-label">Area (Sq. Ft.) *</label>
+                                {{ form.area }}
+                                {% if form.area.errors %}<div class="text-danger small">{{ form.area.errors }}</div>{% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_price" class="form-label">Price *</label>
+                                {{ form.price }}
+                                {% if form.price.errors %}<div class="text-danger small">{{ form.price.errors }}</div>{% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_condition" class="form-label">Condition *</label>
+                            {{ form.condition }}
+                        </div>
+
+                        <!-- Amenities -->
+                        <h5 class="mb-4 mt-5"><i class="fas fa-check-circle"></i> Amenities</h5>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    {{ form.is_furnished }}
+                                    <label class="form-check-label" for="id_is_furnished">Furnished</label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    {{ form.has_parking }}
+                                    <label class="form-check-label" for="id_has_parking">Parking Available</label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    {{ form.has_balcony }}
+                                    <label class="form-check-label" for="id_has_balcony">Balcony</label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    {{ form.has_garden }}
+                                    <label class="form-check-label" for="id_has_garden">Garden</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check mb-3">
+                                    {{ form.has_pool }}
+                                    <label class="form-check-label" for="id_has_pool">Swimming Pool</label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    {{ form.has_gym }}
+                                    <label class="form-check-label" for="id_has_gym">Gym/Fitness Center</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <h5 class="mb-4 mt-5"><i class="fas fa-phone"></i> Contact Information (Optional)</h5>
+
+                        <div class="mb-3">
+                            <label for="id_contact_name" class="form-label">Contact Name</label>
+                            {{ form.contact_name }}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_contact_phone" class="form-label">Phone Number</label>
+                                {{ form.contact_phone }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_contact_email" class="form-label">Email Address</label>
+                                {{ form.contact_email }}
+                            </div>
+                        </div>
+
+                        <!-- Images -->
+                        <h5 class="mb-4 mt-5"><i class="fas fa-images"></i> Add More Images</h5>
+
+                        <div class="mb-4">
+                            <label for="images" class="form-label">Upload Additional Images (Multiple)</label>
+                            <input type="file" id="images" name="images" multiple accept="image/*" class="form-control">
+                            <small class="text-muted d-block mt-2">
+                                <i class="fas fa-info-circle"></i> Upload additional images here.
+                            </small>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="d-grid gap-2 mt-5">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check"></i> Save Changes
+                            </button>
+                            <a href="{% url 'property-detail' property.slug %}" class="btn btn-secondary btn-lg">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

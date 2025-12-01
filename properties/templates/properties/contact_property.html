@@ -1,0 +1,71 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Contact {{ property.title }} - RealEstate{% endblock %}
+
+{% block content %}
+<div class="container container-main mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow mb-4">
+                <div class="card-header" style="background: linear-gradient(135deg, #1e40af 0%, #0f766e 100%); color: white;">
+                    <h3 class="mb-0"><i class="fas fa-envelope"></i> Send Inquiry</h3>
+                </div>
+                <div class="card-body p-5">
+                    <!-- Property Info -->
+                    <div class="alert alert-info mb-4">
+                        <h6 class="mb-2"><i class="fas fa-home"></i> Regarding Property:</h6>
+                        <p class="mb-1"><strong>{{ property.title }}</strong></p>
+                        <p class="mb-0 text-muted">{{ property.location }}, {{ property.city }}</p>
+                    </div>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_name" class="form-label">Full Name *</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors }}</div>{% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Email Address *</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}<div class="text-danger small">{{ form.email.errors }}</div>{% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_phone" class="form-label">Phone Number *</label>
+                            {{ form.phone }}
+                            {% if form.phone.errors %}<div class="text-danger small">{{ form.phone.errors }}</div>{% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_inquiry_type" class="form-label">Inquiry Type *</label>
+                            {{ form.inquiry_type }}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="id_message" class="form-label">Message *</label>
+                            {{ form.message }}
+                            {% if form.message.errors %}<div class="text-danger small">{{ form.message.errors }}</div>{% endif %}
+                        </div>
+
+                        {% if existing_inquiry %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-info-circle"></i> You have already sent an inquiry for this property. Submitting this form will update your previous inquiry.
+                            </div>
+                        {% endif %}
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-send"></i> Send Inquiry
+                            </button>
+                            <a href="{% url 'property-detail' property.slug %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
