@@ -9,10 +9,9 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Security settings
-import os
 SECRET_KEY = os.environ.get('SECRET_KEY', 'your-secret-key-change-this-in-production-use-environment-variables')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = ['*']  # Update with your domain in production
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
 # Application definition
 INSTALLED_APPS = [
@@ -22,6 +21,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
     'properties',
 ]
 
@@ -94,9 +95,17 @@ STATICFILES_DIRS = [BASE_DIR / 'properties' / 'static']
 # WhiteNoise configuration for static files in production
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Media files
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# Media files - Cloudinary for production
+if os.environ.get('CLOUDINARY_URL'):
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+    CLOUDINARY_STORAGE = {
+        'CLOUDINARY_URL': os.environ.get('CLOUDINARY_URL'),
+    }
+    MEDIA_URL = 'https://res.cloudinary.com/'
+else:
+    # Local development
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -121,3 +130,13 @@ PROPERTIES_PER_PAGE = 12
 # Session settings
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Security settings for production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_SECURITY_POLICY = {
+        'default-src': ("'self'", "https:", "data:", "*.cloudinary.com", "*.bootstrapcdn.com", "*.fontawesome.com"),
+    }

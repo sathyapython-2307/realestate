@@ -6,3 +6,5 @@ whitenoise
 gunicorn
 python-dotenv
 psycopg2-binary
+cloudinary
+django-cloudinary-storage
