@@ -104,7 +104,14 @@ if os.environ.get('CLOUDINARY_URL'):
     CLOUDINARY_STORAGE = {
         'CLOUDINARY_URL': os.environ.get('CLOUDINARY_URL'),
     }
-    MEDIA_URL = 'https://res.cloudinary.com/'
+    # Try to extract the cloud name from CLOUDINARY_URL so MEDIA_URL points to the correct CDN root.
+    # CLOUDINARY_URL format: cloudinary://<api_key>:<api_secret>@<cloud_name>
+    cloudinary_url = os.environ.get('CLOUDINARY_URL')
+    try:
+        cloud_name = cloudinary_url.split('@')[-1]
+        MEDIA_URL = f'https://res.cloudinary.com/{cloud_name}/'
+    except Exception:
+        MEDIA_URL = 'https://res.cloudinary.com/'
 else:
     # Local development
     MEDIA_URL = '/media/'
